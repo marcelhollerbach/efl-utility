@@ -47,7 +47,7 @@ boxplot = BoxPlot()
 old_time = resource.getrusage(resource.RUSAGE_CHILDREN).ru_utime
 
 for x in range(1,10):
-  subprocess.run(' '.join(cmd), env = elementary_env_vars)
+  subprocess.run(cmd, env = elementary_env_vars)
   tmp = resource.getrusage(resource.RUSAGE_CHILDREN).ru_utime
   r = tmp - old_time
   old_time = tmp
