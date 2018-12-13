@@ -5,13 +5,21 @@ import os
 import subprocess
 import matplotlib.pyplot as plt
 import time
+from optparse import OptionParser
 
-cmd = sys.argv
-cmd.pop(0)
+parser = OptionParser("usage: %prog [options] arg")
+parser.add_option("-i", "--iterations", dest="max_range",
+                  help="Run max_range times", default="10")
+parser.add_option("-o", "--output", dest="spec_filename",
+                  help="The file where to place the boxplot", default="default")
 
-if len(cmd) == 0:
-  print("Please pass a application to test")
+(options, args) = parser.parse_args()
+
+if len(args) == 0:
+  parser.print_help()
   exit()
+
+cmd = args
 
 class BoxPlot:
   def __init__(self):
@@ -27,12 +35,15 @@ class BoxPlot:
     self.content.append(number)
 
   def output(self):
-    filename = ('_'.join(cmd).replace('/','_').replace('.','_'))+"_"+str(time.time())+'.png'
+    if options.spec_filename == 'default':
+      filename = ('_'.join(cmd).replace('/','_').replace('.','_')).replace(' ','_')+"_"+str(time.time())+'.png'
+    else:
+      filename = options.spec_filename
     print("Min: "+str(self.min))
     print("Max: "+str(self.max))
     print("Mean: "+str(sum(self.content) / len(self.content)))
     fig1, ax1 = plt.subplots()
-    ax1.set_title(cmd[0])
+    ax1.set_title(cmd)
     ax1.boxplot(self.content)
     fig1.savefig(filename)
     plt.show(fig1)
@@ -46,7 +57,7 @@ boxplot = BoxPlot()
 
 old_time = resource.getrusage(resource.RUSAGE_CHILDREN).ru_utime
 
-for x in range(1,10):
+for x in range(1,int(options.max_range)):
   subprocess.run(cmd, env = elementary_env_vars)
   tmp = resource.getrusage(resource.RUSAGE_CHILDREN).ru_utime
   r = tmp - old_time
