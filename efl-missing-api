@@ -1,0 +1,70 @@
+#!/usr/bin/python3
+
+import re
+import sys
+
+class UndefinedApi():
+  def __init__(self, where, api, defined):
+    self.where = where
+    self.api = api
+    self.defined = defined
+
+  def print(self):
+    print(self.where)
+    print(self.api)
+    print(self.defined)
+
+class UndefinedApiCauseDefined():
+  def __init__(self, undefined):
+    self.missed = {}
+    self.apis = {}
+    self.undefined = undefined
+    pass
+
+  def add_missing_api(self, api, used):
+    if used in self.missed:
+      self.missed[used].append(api)
+    else:
+      self.missed[used] = [api]
+    if api in self.apis:
+      self.apis[api].append(used)
+    else:
+      self.apis[api] = [used]
+
+  def print_grouped_by_defined_used(self):
+    print("API defined in "+self.undefined+' missing in')
+    for key in self.missed:
+      for missed in self.missed[key]:
+        print()
+        apis = ""
+        for missed in self.missed[key]:
+          apis += missed+", "
+        print("   "+key+":"+apis)
+
+  def print_grouped_by_defined_file_api_used(self):
+    print("API defined in "+self.undefined+' missing in')
+    for key in self.apis:
+      print("   "+key+":")
+      for files in self.apis[key]:
+        print("      "+files+"")
+
+undefinedApis = {}
+
+pat = re.compile('^eolian: ([A-Za-z0-9._]+):[0-9]+:[0-9]+: (partially implemented|unimplemented) function \'([A-Za-z0-9_]+)\' \(originally defined at ([A-Za-z0-9._]+):[0-9]+:[0-9]+\)$')
+
+f = open(sys.argv[1], "r")
+for l in f:
+  p = pat.match(l)
+  if p is None:
+    print("line "+l+" was not helpfull")
+    continue
+  problem_file = p.group(1)
+  problem_api = p.group(3)
+  problem_api_file = p.group(4)
+  if problem_api_file not in undefinedApis:
+    undefinedApis[problem_api_file] = UndefinedApiCauseDefined(problem_api_file)
+  undefinedApis[problem_api_file].add_missing_api(problem_api, problem_file)
+
+
+for miss in undefinedApis:
+  undefinedApis[miss].print_grouped_by_defined_file_api_used()

@@ -1,5 +1,11 @@
-project('efl-utility',
-  version: '0.1'
+project('efl-utility', 'c',
+  version: '0.1',
+)
+
+executable('efl-check',
+  'checks.c',
+  dependencies: dependency('eolian'),
+  install: true,
 )
 
 install_data('efl-performance',
