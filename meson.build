@@ -4,7 +4,7 @@ project('efl-utility', 'c',
 
 executable('efl-check',
   'checks.c',
-  dependencies: [dependency('eina'), dependency('eolian')]
+  dependencies: [dependency('eina'), dependency('eolian')],
   install: true,
 )
 

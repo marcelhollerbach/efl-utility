@@ -32,17 +32,16 @@ class UndefinedApiCauseDefined():
       self.apis[api] = [used]
 
   def print_grouped_by_defined_used(self):
-    print("API defined in "+self.undefined+' missing in')
-    for key in self.missed:
-      for missed in self.missed[key]:
-        print()
-        apis = ""
-        for missed in self.missed[key]:
-          apis += missed+", "
-        print("   "+key+":"+apis)
+    print("API defined in "+self.undefined+' missing in '+str(len(self.missed)))
+#    for key in self.missed:
+#      for missed in self.missed[key]:
+#        apis = ""
+#        for missed in self.missed[key]:
+#          apis += missed+", "
+#        print("   "+key+":"+apis)
 
   def print_grouped_by_defined_file_api_used(self):
-    print("API defined in "+self.undefined+' missing in')
+    print("API defined in "+self.undefined+' missing in '+str(len(self.missed)))
     for key in self.apis:
       print("   "+key+":")
       for files in self.apis[key]:
